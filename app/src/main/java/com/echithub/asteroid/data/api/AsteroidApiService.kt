@@ -1,7 +1,10 @@
 package com.echithub.asteroid.data.api
 
+import com.echithub.asteroid.data.api.Response.BaseResponse
+import com.echithub.asteroid.data.model.Asteroid
 import com.echithub.asteroid.data.model.PictureOfDay
 import io.reactivex.Single
+import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -19,5 +22,9 @@ class AsteroidApiService {
 
     fun getPictureOfDay(): Single<PictureOfDay>{
         return api.getPictureOfDay()
+    }
+
+    fun getAsteroids(): Single<BaseResponse>{
+        return api.getAsteroid()
     }
 }

@@ -7,9 +7,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.echithub.asteroid.data.AppDatabase
 import com.echithub.asteroid.data.api.AsteroidApiService
+import com.echithub.asteroid.data.api.Response.BaseResponse
+import com.echithub.asteroid.data.api.Response.CloseApproachData
+import com.echithub.asteroid.data.api.Response.EstimatedDiameter
+import com.echithub.asteroid.data.api.Response.RelativeVelocity
 import com.echithub.asteroid.data.model.Asteroid
 import com.echithub.asteroid.data.model.PictureOfDay
 import com.echithub.asteroid.data.repo.AsteroidRepo
+import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
@@ -47,7 +53,9 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         hasError.value = false
         isLoading.value = false
 
+        getAsteroidsFromApi()
         getPictureOfDayFromApi()
+
     }
 
     fun getPictureOfDayFromApi(){
@@ -62,7 +70,92 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
                         pictureOfDay.value = t
                         isLoading.value = false
                         hasError.value = false
-                        Log.i("Asteroid Api Result : ",t.toString())
+                        Log.i("Asteroid Picture: ",t.toString())
+                    }
+
+                    override fun onError(e: Throwable) {
+                        isLoading.value = false
+                        hasError.value = true
+                        e.printStackTrace()
+                    }
+
+                })
+        )
+    }
+
+    fun getAsteroidsFromApi(){
+        isLoading.value = true
+        Log.i("Asteroid Api Start : ","Starting Download")
+        disposable.add(
+            asteroidService.getAsteroids()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object:DisposableSingleObserver<BaseResponse>(){
+                    override fun onSuccess(t: BaseResponse) {
+                        isLoading.value = false
+                        hasError.value = false
+                        Log.i("Asteroid Api Result : ",t.nearEarthObjects.toString())
+
+                        var asteroidList = ArrayList<Asteroid>()
+
+                        val resultJson: LinkedTreeMap<String,ArrayList<Any>>? = t.nearEarthObjects as? LinkedTreeMap<String,ArrayList<Any>>
+                        if (resultJson != null) {
+                            for ((key,value) in resultJson){
+                                Log.i("Asteroid Key Map : ","$key")
+                                for (asteroid in value){
+
+                                    val currentAsteroid: LinkedTreeMap<String,Any>? = asteroid as? LinkedTreeMap<String,Any>
+                                    val codeName = currentAsteroid?.get("name")
+                                    val id = currentAsteroid?.get("id").toString().toLong()
+                                    val neoReferenceId = currentAsteroid?.get("neo_reference_id")
+                                    val nasaJplUrl = currentAsteroid?.get("nasa_jpl_url")
+                                    val absoluteMagnitude = currentAsteroid?.get("absolute_magnitude_h")
+
+                                    val estimatedDiameter:EstimatedDiameter = Gson()
+                                        .fromJson(currentAsteroid?.get("estimated_diameter").toString(),EstimatedDiameter::class.java)
+
+                                    val diameter = estimatedDiameter.kilometers?.estimatedDiameterMax
+                                    val isPotentiallyHazardous = currentAsteroid?.get("is_potentially_hazardous_asteroid") as Boolean
+
+                                    // Closing Approach Date
+                                    val dateData = currentAsteroid?.get("close_approach_data") as List<*>
+                                    val actualData = dateData[0] as LinkedTreeMap<String,Any>
+                                    val closeApproachDate = actualData?.get("close_approach_date").toString()
+
+                                    // Relative Velocity
+                                    val velocityData = actualData?.get("relative_velocity") as LinkedTreeMap<String,Any>
+                                    val relativeVelocity = velocityData["miles_per_hour"].toString().toDouble()
+                                    Log.i("Asteroid Velocity",relativeVelocity.toString())
+
+                                    //Distance From Earth
+                                    val distance = actualData?.get("miss_distance") as LinkedTreeMap<String,Any>
+                                    val distanceFromEarth = distance["miles"].toString().toDouble()
+                                    Log.i("Asteroid Distance",distanceFromEarth.toString())
+//
+
+
+                                    val isSentryObject = currentAsteroid?.get("is_sentry_object")
+
+                                    val asteroidToAdd = Asteroid(
+                                        id = id,
+                                        codename = codeName as String,
+                                        closeApproachDate = closeApproachDate,
+                                        estimatedDiameter = diameter.toString().toDouble(),
+                                        absoluteMagnitude = absoluteMagnitude.toString().toDouble(),
+                                        relativeVelocity = relativeVelocity,
+                                        distanceFromEarth = distanceFromEarth,
+                                        isPotentiallyHazardous = isPotentiallyHazardous
+                                    )
+                                    asteroidList.add(asteroidToAdd)
+                                    Log.i("Asteroid Asteroid : ",currentAsteroid?.get("name").toString())
+                                }
+
+                            }
+                        }
+//
+                        Log.i("Asteroid Completed: ",asteroidList.toString())
+                        Log.i("Asteroid Completed: ","Completed Download")
+                        asteroids.value = asteroidList
                     }
 
                     override fun onError(e: Throwable) {

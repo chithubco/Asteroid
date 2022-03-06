@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.echithub.asteroid.databinding.FragmentMainBinding
 import com.echithub.asteroid.ui.adapters.AsteroidListAdapter
 import com.echithub.asteroid.ui.viewmodel.MainViewModel
+import com.echithub.asteroid.util.getProgressSpinner
+import com.echithub.asteroid.util.loadImage
 
 class MainFragment : Fragment() {
 
@@ -25,6 +27,7 @@ class MainFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentMainBinding.inflate(inflater, container,false)
+
         return binding.root
     }
 
@@ -45,13 +48,16 @@ class MainFragment : Fragment() {
 //        })
 
         mAsteroidVideModel.asteroids.observe(viewLifecycleOwner, Observer { asteroids ->
-            Log.i("Asteroid List",asteroids.toString())
-            Log.i("Asteroid Size",asteroids.size.toString())
+//            Log.i("Asteroid List",asteroids.toString())
+//            Log.i("Asteroid Size",asteroids.size.toString())
             adapter.setData(asteroids)
         })
 
         mAsteroidVideModel.pictureOfDay.observe(viewLifecycleOwner, Observer { mediaOfDay ->
+            binding.activityMainImageOfTheDay
+                .loadImage(mediaOfDay.url, getProgressSpinner(binding.activityMainImageOfTheDay.context))
 
+            binding.activityMainTxtTitle.text = mediaOfDay.title
         })
 
         mAsteroidVideModel.hasError.observe(viewLifecycleOwner, Observer { error ->
