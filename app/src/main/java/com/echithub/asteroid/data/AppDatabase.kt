@@ -6,8 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.echithub.asteroid.data.dao.AsteroidDao
 import com.echithub.asteroid.data.model.Asteroid
+import com.echithub.asteroid.data.model.PictureOfDay
 
-@Database(entities = [Asteroid::class], version = 1, exportSchema = false)
+@Database(entities = [Asteroid::class,PictureOfDay::class], version = 1, exportSchema = false)
 abstract class AppDatabase: RoomDatabase() {
 
     abstract val asteroidDao: AsteroidDao
@@ -20,8 +21,6 @@ abstract class AppDatabase: RoomDatabase() {
         Create the database
          */
         fun getDatabase(context: Context): AppDatabase {
-            // if the INSTANCE is not null, then return it,
-            // if it is, then create the database
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,

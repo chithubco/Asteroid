@@ -8,4 +8,7 @@ class AsteroidRepo(private val  asteroidDao: AsteroidDao) {
 
     val readAllData: LiveData<List<Asteroid>> = asteroidDao.getAll()
 
+    suspend fun addAsteroid(vararg asteroids: Asteroid):List<Long>{
+        return asteroidDao.insertAsteroid(*asteroids)
+    }
 }
