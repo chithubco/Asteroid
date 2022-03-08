@@ -42,16 +42,14 @@ class MainFragment : Fragment() {
         binding.asteroidRecycler.layoutManager = LinearLayoutManager(requireContext())
 
         // Observe Live Data
-//        mAsteroidVideModel.readAllData.observe(viewLifecycleOwner, Observer { asteroids ->
-//            Log.i("Asteroid List",asteroids.toString())
-//            adapter.setData(asteroids)
-//        })
-
-        mAsteroidVideModel.asteroids.observe(viewLifecycleOwner, Observer { asteroids ->
-//            Log.i("Asteroid List",asteroids.toString())
-//            Log.i("Asteroid Size",asteroids.size.toString())
+        mAsteroidVideModel.readAllData.observe(viewLifecycleOwner, Observer { asteroids ->
+            Log.i("Asteroid List",asteroids.toString())
             adapter.setData(asteroids)
         })
+
+//        mAsteroidVideModel.asteroids.observe(viewLifecycleOwner, Observer { asteroids ->
+//            adapter.setData(asteroids)
+//        })
 
         mAsteroidVideModel.pictureOfDay.observe(viewLifecycleOwner, Observer { mediaOfDay ->
             binding.activityMainImageOfTheDay

@@ -22,7 +22,7 @@ interface AsteroidDao {
     @Query("SELECT * FROM asteroid_table WHERE id=:key")
     fun get(key:Long): Asteroid?
 
-//    @Query("DELETE FROM asteroid_table")
-//    suspend fun deleteAll
+    @Query("DELETE FROM asteroid_table")
+    fun deleteAll()
 
 }

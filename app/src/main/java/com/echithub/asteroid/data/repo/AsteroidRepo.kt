@@ -11,4 +11,8 @@ class AsteroidRepo(private val  asteroidDao: AsteroidDao) {
     suspend fun addAsteroid(vararg asteroids: Asteroid):List<Long>{
         return asteroidDao.insertAsteroid(*asteroids)
     }
+
+    suspend fun deleteAllAsteroidFromDatabase(){
+        asteroidDao.deleteAll()
+    }
 }

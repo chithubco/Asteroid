@@ -15,6 +15,7 @@ import com.echithub.asteroid.data.api.Response.RelativeVelocity
 import com.echithub.asteroid.data.model.Asteroid
 import com.echithub.asteroid.data.model.PictureOfDay
 import com.echithub.asteroid.data.repo.AsteroidRepo
+import com.echithub.asteroid.util.asteroidRetrieved
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,20 +46,12 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
     fun storeAsteroidLocally(list: List<Asteroid>){
         viewModelScope.launch (Dispatchers.IO){
+            repo.deleteAllAsteroidFromDatabase()
             val result = repo.addAsteroid(*list.toTypedArray())
         }
     }
 
     fun refresh(){
-//        val asteroid1 = Asteroid(123,"Destroyer","12 June 2022",5.6,3.5,3.6,56.7,true)
-//        val asteroid2 = Asteroid(56,"FunPlace","13 June 2022",5.6,3.5,3.6,56.7,true)
-//        val asteroid3 = Asteroid(298,"Hercules","13 June 2022",5.6,3.5,3.6,56.7,true)
-//        val asteroid4 = Asteroid(89,"Zeus","13 June 2022",5.6,3.5,3.6,56.7,true)
-//
-//
-//        asteroids.value = arrayListOf(
-//            asteroid1,asteroid2,asteroid3,asteroid4)
-
         hasError.value = false
         isLoading.value = true
         getPictureOfDayFromApi()
@@ -104,8 +97,6 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
                         hasError.value = false
 
                         val asteroidList = asteroidRetrieved(t.nearEarthObjects as? LinkedTreeMap<String,ArrayList<Any>>)
-                        Log.i("Asteroid Completed: ",asteroidList.toString())
-                        Log.i("Asteroid Completed: ","Completed Download")
 
                         storeAsteroidLocally(asteroidList)
                         asteroids.value = asteroidList
@@ -121,65 +112,6 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         )
     }
 
-    private fun asteroidRetrieved(resultJson:LinkedTreeMap<String,ArrayList<Any>>?)
-    :ArrayList<Asteroid>{
-        var asteroidList = ArrayList<Asteroid>()
-        if (resultJson != null) {
-            for ((key,value) in resultJson){
-                Log.i("Asteroid Key Map : ","$key")
-                for (asteroid in value){
-
-                    val currentAsteroid: LinkedTreeMap<String,Any>? = asteroid as? LinkedTreeMap<String,Any>
-                    val codeName = currentAsteroid?.get("name")
-                    val id = currentAsteroid?.get("id").toString().toLong()
-                    val neoReferenceId = currentAsteroid?.get("neo_reference_id")
-                    val nasaJplUrl = currentAsteroid?.get("nasa_jpl_url")
-                    val absoluteMagnitude = currentAsteroid?.get("absolute_magnitude_h")
-
-                    val estimatedDiameter:EstimatedDiameter = Gson()
-                        .fromJson(currentAsteroid?.get("estimated_diameter").toString(),EstimatedDiameter::class.java)
-
-                    val diameter = estimatedDiameter.kilometers?.estimatedDiameterMax
-                    val isPotentiallyHazardous = currentAsteroid?.get("is_potentially_hazardous_asteroid") as Boolean
-
-                    // Closing Approach Date
-                    val dateData = currentAsteroid?.get("close_approach_data") as List<*>
-                    val actualData = dateData[0] as LinkedTreeMap<String,Any>
-                    val closeApproachDate = actualData?.get("close_approach_date").toString()
-
-                    // Relative Velocity
-                    val velocityData = actualData?.get("relative_velocity") as LinkedTreeMap<String,Any>
-                    val relativeVelocity = velocityData["miles_per_hour"].toString().toDouble()
-                    Log.i("Asteroid Velocity",relativeVelocity.toString())
-
-                    //Distance From Earth
-                    val distance = actualData?.get("miss_distance") as LinkedTreeMap<String,Any>
-                    val distanceFromEarth = distance["miles"].toString().toDouble()
-                    Log.i("Asteroid Distance",distanceFromEarth.toString())
-//
-
-
-                    val isSentryObject = currentAsteroid?.get("is_sentry_object")
-
-                    val asteroidToAdd = Asteroid(
-                        id = id,
-                        codename = codeName as String,
-                        closeApproachDate = closeApproachDate,
-                        estimatedDiameter = diameter.toString().toDouble(),
-                        absoluteMagnitude = absoluteMagnitude.toString().toDouble(),
-                        relativeVelocity = relativeVelocity,
-                        distanceFromEarth = distanceFromEarth,
-                        isPotentiallyHazardous = isPotentiallyHazardous
-                    )
-                    asteroidList.add(asteroidToAdd)
-                    Log.i("Asteroid Asteroid : ",currentAsteroid?.get("name").toString())
-                }
-
-            }
-        }
-        return asteroidList
-//
-    }
 
     override fun onCleared() {
         super.onCleared()
