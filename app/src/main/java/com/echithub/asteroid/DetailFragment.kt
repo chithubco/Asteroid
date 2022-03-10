@@ -38,18 +38,21 @@ class DetailFragment : Fragment() {
 
 
         mDetailViewModel = ViewModelProvider(this).get(DetailViewModel::class.java)
+
+//        binding.asteroid = mDetailViewModel
         mDetailViewModel.refresh(args.asteroidId)
 
 
         mDetailViewModel.asteroidLiveData.observe(viewLifecycleOwner, Observer { asteroid ->
             Log.i("Asteroid Id:","Got here")
+            binding.asteroid = asteroid
             asteroid?.let {
 
                 binding.activityDetailImage.loadImage(asteroid.url,
                     getProgressSpinner(binding.activityDetailImage.context)
                 )
                 binding.absoluteMagnitude.text = asteroid.absoluteMagnitude.toString()
-                binding.closeApproachDate.text = asteroid.closeApproachDate
+//                binding.closeApproachDate.text = asteroid.closeApproachDate
                 binding.distanceFromEarth.text = asteroid.distanceFromEarth.toString()
                 binding.estimatedDiameter.text = asteroid.estimatedDiameter.toString()
                 binding.relativeVelocity.text = asteroid.relativeVelocity.toString()
@@ -75,22 +78,4 @@ class DetailFragment : Fragment() {
         dialog?.show()
     }
 
-
-//    fun onCreateDialog(savedInstanceState: Bundle): Dialog {
-//        return activity?.let {
-//            // Use the Builder class for convenient dialog construction
-//            val builder = AlertDialog.Builder(it)
-//            builder.setMessage("Start")
-//                .setPositiveButton("Fire",
-//                    DialogInterface.OnClickListener { dialog, id ->
-//                        // START THE GAME!
-//                    })
-//                .setNegativeButton("Cancel",
-//                    DialogInterface.OnClickListener { dialog, id ->
-//                        // User cancelled the dialog
-//                    })
-//            // Create the AlertDialog object and return it
-//            builder.create()
-//        } ?: throw IllegalStateException("Activity cannot be null")
-//    }
 }

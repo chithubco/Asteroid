@@ -35,7 +35,7 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         mAsteroidVideModel = ViewModelProvider(this).get(MainViewModel::class.java)
-//        mAsteroidVideModel.refresh()
+
         mAsteroidVideModel.getPictureOfDayFromApi()
         mAsteroidVideModel.getAsteroidsFromApi()
 
