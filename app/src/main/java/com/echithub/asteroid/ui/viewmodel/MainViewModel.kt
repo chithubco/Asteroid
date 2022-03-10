@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(application: Application): AndroidViewModel(application) {
 
     lateinit var readAllData: LiveData<List<Asteroid>>
-    private lateinit var repo: AsteroidRepo
+    private var repo: AsteroidRepo = AsteroidRepo(AppDatabase.getDatabase(getApplication()))
 
     private val asteroidService = AsteroidApiService()
     private val disposable = CompositeDisposable()
@@ -39,8 +39,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     val isLoading = MutableLiveData<Boolean>()
 
     init {
-        val asteroidDao = AppDatabase.getDatabase(getApplication()).asteroidDao
-        repo = AsteroidRepo(asteroidDao)
+//        val asteroidDao = AppDatabase.getDatabase(getApplication()).asteroidDao
         readAllData = repo.readAllData
     }
 
