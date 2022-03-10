@@ -35,7 +35,9 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         mAsteroidVideModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        mAsteroidVideModel.refresh()
+//        mAsteroidVideModel.refresh()
+        mAsteroidVideModel.getPictureOfDayFromApi()
+        mAsteroidVideModel.getAsteroidsFromApi()
 
         val adapter = AsteroidListAdapter(arrayListOf())
         binding.asteroidRecycler.adapter = adapter
@@ -43,13 +45,8 @@ class MainFragment : Fragment() {
 
         // Observe Live Data
         mAsteroidVideModel.readAllData.observe(viewLifecycleOwner, Observer { asteroids ->
-            Log.i("Asteroid List",asteroids.toString())
             adapter.setData(asteroids)
         })
-
-//        mAsteroidVideModel.asteroids.observe(viewLifecycleOwner, Observer { asteroids ->
-//            adapter.setData(asteroids)
-//        })
 
         mAsteroidVideModel.pictureOfDay.observe(viewLifecycleOwner, Observer { mediaOfDay ->
             binding.activityMainImageOfTheDay

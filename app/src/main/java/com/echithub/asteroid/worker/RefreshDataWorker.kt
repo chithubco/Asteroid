@@ -10,11 +10,12 @@ import retrofit2.HttpException
 class RefreshDataWorker(appContext: Context,params: WorkerParameters)
     : CoroutineWorker(appContext,params){
     override suspend fun doWork(): Result {
-        val asteroidDao = AppDatabase.getDatabase(applicationContext).asteroidDao
-//        val repo = AsteroidRepo(asteroidDao)
+        val asteroidDao = AppDatabase.getDatabase(applicationContext)
+        val repo = AsteroidRepo(asteroidDao)
 
         return try {
             // TO DO - Get sterdoid in the backgroun
+                repo.refresh()
             Result.success()
         }catch(exception: HttpException) {
             Result.retry()

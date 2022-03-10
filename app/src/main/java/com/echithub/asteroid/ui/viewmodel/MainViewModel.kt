@@ -28,18 +28,18 @@ import kotlinx.coroutines.launch
 class MainViewModel(application: Application): AndroidViewModel(application) {
 
     lateinit var readAllData: LiveData<List<Asteroid>>
+    lateinit var readPictureOfDay: LiveData<PictureOfDay>
+
     private var repo: AsteroidRepo = AsteroidRepo(AppDatabase.getDatabase(getApplication()))
 
     private val asteroidService = AsteroidApiService()
     private val disposable = CompositeDisposable()
 
-    val asteroids = MutableLiveData<List<Asteroid>>()
     val pictureOfDay = MutableLiveData<PictureOfDay>()
     val hasError = MutableLiveData<Boolean>()
     val isLoading = MutableLiveData<Boolean>()
 
     init {
-//        val asteroidDao = AppDatabase.getDatabase(getApplication()).asteroidDao
         readAllData = repo.readAllData
     }
 
@@ -53,8 +53,11 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     fun refresh(){
         hasError.value = false
         isLoading.value = true
-        getPictureOfDayFromApi()
-        getAsteroidsFromApi()
+       viewModelScope.launch {
+           repo.refresh()
+           repo.refreshPictureOfDay()
+           readAllData = repo.readAllData
+       }
 
     }
 
@@ -70,7 +73,6 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
                         pictureOfDay.value = t
                         isLoading.value = false
                         hasError.value = false
-                        Log.i("Asteroid Picture: ",t.toString())
                     }
 
                     override fun onError(e: Throwable) {
@@ -85,7 +87,6 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
     fun getAsteroidsFromApi(){
         isLoading.value = true
-        Log.i("Asteroid Api Start : ","Starting Download")
         disposable.add(
             asteroidService.getAsteroids()
                 .subscribeOn(Schedulers.newThread())
@@ -94,11 +95,8 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
                     override fun onSuccess(t: BaseResponse) {
                         isLoading.value = false
                         hasError.value = false
-
                         val asteroidList = asteroidRetrieved(t.nearEarthObjects as? LinkedTreeMap<String,ArrayList<Any>>)
-
                         storeAsteroidLocally(asteroidList)
-                        asteroids.value = asteroidList
                     }
 
                     override fun onError(e: Throwable) {

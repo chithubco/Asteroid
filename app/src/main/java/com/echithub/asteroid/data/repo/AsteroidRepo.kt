@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import com.echithub.asteroid.data.AppDatabase
 import com.echithub.asteroid.data.api.AsteroidApiService
 import com.echithub.asteroid.data.api.Response.BaseResponse
-import com.echithub.asteroid.data.dao.AsteroidDao
 import com.echithub.asteroid.data.model.Asteroid
+import com.echithub.asteroid.data.model.PictureOfDay
 import com.echithub.asteroid.util.asteroidRetrieved
 import com.google.gson.internal.LinkedTreeMap
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -23,45 +23,89 @@ class AsteroidRepo(private val  database: AppDatabase) {
 
     private val asteroidDao = database.asteroidDao
     val readAllData: LiveData<List<Asteroid>> = asteroidDao.getAll()
+
     private val disposable = CompositeDisposable()
     private val asteroidService = AsteroidApiService()
+
+    private var asteroids: List<Asteroid>?= null
+    private var pictures: PictureOfDay?= null
 
     suspend fun addAsteroid(vararg asteroids: Asteroid):List<Long>{
         return asteroidDao.insertAsteroid(*asteroids)
     }
 
+    private suspend fun addPictureOfDay(vararg pictures: PictureOfDay){
+        asteroidDao.insertPictureOfDay(*pictures)
+    }
+
+
     suspend fun deleteAllAsteroidFromDatabase(){
         asteroidDao.deleteAll()
     }
 
-//    suspend fun getAsteroidFromRemoteApi():ArrayList<Asteroid>{
-//        withContext(Dispatchers.IO){
-//            disposable.add(
-//                asteroidService.getAsteroids()
-//                    .subscribeOn(Schedulers.newThread())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribeWith(object: DisposableSingleObserver<BaseResponse>(){
-//                        override fun onSuccess(t: BaseResponse) {
-//
-//                            val asteroidList = asteroidRetrieved(t.nearEarthObjects as? LinkedTreeMap<String,ArrayList<Any>>)
-//
-////                            storeAsteroidLocally(asteroidList)
-//
-//                        }
-//
-//                        override fun onError(e: Throwable) {
-//                            e.printStackTrace()
-//                        }
-//
-//                    })
-//            )
-//        }
-//    }
+    fun getAsteroidWithId(asteroidId: Long): Asteroid {
+        return asteroidDao.getAsteroidWithId(asteroidId)
+    }
 
-    suspend fun storeAsteroidLocally(list:List<Asteroid>){
+    private suspend fun getAsteroidFromRemoteApi() {
+        withContext(Dispatchers.IO){
+            disposable.add(
+                asteroidService.getAsteroids()
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object: DisposableSingleObserver<BaseResponse>(){
+                        override fun onSuccess(t: BaseResponse) {
+                            asteroids = asteroidRetrieved(t.nearEarthObjects as? LinkedTreeMap<String,ArrayList<Any>>)
+                        }
+                        override fun onError(e: Throwable) {
+                            e.printStackTrace()
+                        }
+
+                    })
+            )
+        }
+    }
+
+    fun getPictureOfDayFromApi(){
+
+        disposable.add(
+            asteroidService.getPictureOfDay()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object:DisposableSingleObserver<PictureOfDay>(){
+                    override fun onSuccess(t: PictureOfDay) {
+                        pictures = t
+                    }
+
+                    override fun onError(e: Throwable) {
+                        e.printStackTrace()
+                    }
+
+                })
+        )
+    }
+
+    suspend fun refresh(){
+        getAsteroidFromRemoteApi()
+        asteroids?.let { storeAsteroidLocally(it) }
+    }
+
+    suspend fun refreshPictureOfDay(){
+        getPictureOfDayFromApi()
+        pictures?.let { storePictureOfDayLocally(it) }
+    }
+
+
+    private suspend fun storeAsteroidLocally(list:List<Asteroid>){
         withContext(Dispatchers.IO){
             deleteAllAsteroidFromDatabase()
             addAsteroid(*list.toTypedArray())
+        }
+    }
+
+    private suspend fun storePictureOfDayLocally(list:PictureOfDay){
+        withContext(Dispatchers.IO){
+            addPictureOfDay(list)
         }
     }
 }

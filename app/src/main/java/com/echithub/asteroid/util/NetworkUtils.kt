@@ -17,7 +17,7 @@ fun asteroidRetrieved(resultJson: LinkedTreeMap<String, ArrayList<Any>>?)
     var asteroidList = ArrayList<Asteroid>()
     if (resultJson != null) {
         for ((key,value) in resultJson){
-            Log.i("Asteroid Key Map : ","$key")
+//            Log.i("Asteroid Key Map : ","$key")
             for (asteroid in value){
 
                 val currentAsteroid: LinkedTreeMap<String,Any>? = asteroid as? LinkedTreeMap<String,Any>
@@ -42,16 +42,18 @@ fun asteroidRetrieved(resultJson: LinkedTreeMap<String, ArrayList<Any>>?)
                 // Relative Velocity
                 val velocityData = actualData?.get("relative_velocity") as LinkedTreeMap<String,Any>
                 val relativeVelocity = velocityData["miles_per_hour"].toString().toDouble()
-                Log.i("Asteroid Velocity",relativeVelocity.toString())
+//                Log.i("Asteroid Velocity",relativeVelocity.toString())
 
                 //Distance From Earth
                 val distance = actualData?.get("miss_distance") as LinkedTreeMap<String,Any>
                 val distanceFromEarth = distance["miles"].toString().toDouble()
-                Log.i("Asteroid Distance",distanceFromEarth.toString())
+//                Log.i("Asteroid Distance",distanceFromEarth.toString())
 //
 
 
                 val isSentryObject = currentAsteroid?.get("is_sentry_object")
+
+                val imageUrl = currentAsteroid?.get("nasa_jpl_url") as String
 
                 val asteroidToAdd = Asteroid(
                     id = id,
@@ -61,10 +63,11 @@ fun asteroidRetrieved(resultJson: LinkedTreeMap<String, ArrayList<Any>>?)
                     absoluteMagnitude = absoluteMagnitude.toString().toDouble(),
                     relativeVelocity = relativeVelocity,
                     distanceFromEarth = distanceFromEarth,
-                    isPotentiallyHazardous = isPotentiallyHazardous
+                    isPotentiallyHazardous = isPotentiallyHazardous,
+                    url = "https://cdn.dnaindia.com/sites/default/files/styles/full/public/2021/12/16/1010226-asteroid-g62225b7ab1280.jpg"
                 )
                 asteroidList.add(asteroidToAdd)
-                Log.i("Asteroid Asteroid : ",currentAsteroid?.get("name").toString())
+//                Log.i("Asteroid Asteroid : ",currentAsteroid?.get("name").toString())
             }
 
         }
