@@ -7,6 +7,10 @@
         <variable
             name="asteroid"
             type="com.echithub.asteroid.data.model.Asteroid" />
+
+        <variable
+            name="imageClickLister"
+            type="com.echithub.asteroid.ui.listener.AsteroidClickLister" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,7 +27,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/asteroid_hazardous" />
+            android:onClick="@{imageClickLister.onAsteroidImageClicked}"
+            android:imageUrl="@{asteroid.url}" />
 
         <ScrollView
             android:layout_width="0dp"
@@ -74,7 +79,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="25th July 2022"
+                        android:text="@{String.valueOf(asteroid.absoluteMagnitude)}"
                         android:textColor="@color/default_text_color" />
                 </LinearLayout>
 
@@ -91,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textColor="@color/default_text_color"
-                    tools:text="0.82 km" />
+                    tools:text="@{String.valueOf(asteroid.estimatedDiameter)}" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -106,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textColor="@color/default_text_color"
-                    tools:text="11.9 km/s" />
+                    tools:text="@{String.valueOf(asteroid.relativeVelocity)}" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -121,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textColor="@color/default_text_color"
-                    tools:text="0.0924 au" />
+                    tools:text="@{String.valueOf(asteroid.distanceFromEarth)}" />
 
             </LinearLayout>
 

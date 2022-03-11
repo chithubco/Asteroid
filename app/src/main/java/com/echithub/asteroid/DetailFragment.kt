@@ -11,12 +11,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.echithub.asteroid.databinding.FragmentDetailBinding
+import com.echithub.asteroid.ui.listener.AsteroidClickLister
 import com.echithub.asteroid.ui.viewmodel.DetailViewModel
 import com.echithub.asteroid.util.getProgressSpinner
 import com.echithub.asteroid.util.loadImage
 
 
-class DetailFragment : Fragment() {
+class DetailFragment : Fragment(),AsteroidClickLister{
 
     private lateinit var mDetailViewModel: DetailViewModel
     private var _binding: FragmentDetailBinding? = null
@@ -36,36 +37,15 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.imageClickLister = this
 
         mDetailViewModel = ViewModelProvider(this).get(DetailViewModel::class.java)
-
-//        binding.asteroid = mDetailViewModel
         mDetailViewModel.refresh(args.asteroidId)
-
-
         mDetailViewModel.asteroidLiveData.observe(viewLifecycleOwner, Observer { asteroid ->
-            Log.i("Asteroid Id:","Got here")
-            binding.asteroid = asteroid
             asteroid?.let {
-
-                binding.activityDetailImage.loadImage(asteroid.url,
-                    getProgressSpinner(binding.activityDetailImage.context)
-                )
-                binding.absoluteMagnitude.text = asteroid.absoluteMagnitude.toString()
-//                binding.closeApproachDate.text = asteroid.closeApproachDate
-                binding.distanceFromEarth.text = asteroid.distanceFromEarth.toString()
-                binding.estimatedDiameter.text = asteroid.estimatedDiameter.toString()
-                binding.relativeVelocity.text = asteroid.relativeVelocity.toString()
-
+                binding.asteroid = asteroid
             }
         })
-
-        binding.activityDetailImage.setOnClickListener {
-            openDialog("This is a good thing","Asteroid")
-
-        }
-
-
     }
 
     private fun openDialog(message: String,title:String){
@@ -76,6 +56,10 @@ class DetailFragment : Fragment() {
         builder?.setMessage(message)?.setTitle(title)
         val dialog: AlertDialog? = builder?.create()
         dialog?.show()
+    }
+
+    override fun onAsteroidImageClicked(v: View) {
+        openDialog("This is a good thing","Asteroid")
     }
 
 }

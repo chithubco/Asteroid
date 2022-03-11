@@ -28,6 +28,8 @@ class AsteroidListAdapter(val asteroidList: ArrayList<Asteroid>): RecyclerView.A
         var currentItem = asteroidList[position]
         holder.itemView.findViewById<TextView>(R.id.tv_asteroid_id).text = currentItem.id.toString()
         holder.itemView.findViewById<TextView>(R.id.tv_asteroid_date).text = currentItem.codename
+        holder.itemView.findViewById<TextView>(R.id.tv_created_date).text = currentItem.createdDate
+        holder.itemView.findViewById<TextView>(R.id.tv_is_hazardous).text = currentItem.isPotentiallyHazardous.toString()
 
 
         holder.itemView.setOnClickListener {

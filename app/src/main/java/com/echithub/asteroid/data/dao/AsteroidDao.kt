@@ -8,7 +8,7 @@ import com.echithub.asteroid.data.model.PictureOfDay
 @Dao
 interface AsteroidDao {
 
-    @Query("SELECT * FROM asteroid_table")
+    @Query("SELECT * FROM asteroid_table ORDER BY created_date DESC")
     fun  getAll(): LiveData<List<Asteroid>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

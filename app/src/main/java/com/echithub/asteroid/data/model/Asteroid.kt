@@ -30,4 +30,6 @@ data class Asteroid(
     @SerializedName("nasa_jpl_url")
     @ColumnInfo(name = "image_url")
     val url: String?,
+    @ColumnInfo(name = "created_date")
+    val createdDate: String?
     )

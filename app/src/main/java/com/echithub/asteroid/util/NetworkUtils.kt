@@ -18,6 +18,8 @@ fun asteroidRetrieved(resultJson: LinkedTreeMap<String, ArrayList<Any>>?)
     if (resultJson != null) {
         for ((key,value) in resultJson){
 //            Log.i("Asteroid Key Map : ","$key")
+            val createdDate = key
+
             for (asteroid in value){
 
                 val currentAsteroid: LinkedTreeMap<String,Any>? = asteroid as? LinkedTreeMap<String,Any>
@@ -53,7 +55,8 @@ fun asteroidRetrieved(resultJson: LinkedTreeMap<String, ArrayList<Any>>?)
 
                 val isSentryObject = currentAsteroid?.get("is_sentry_object")
 
-                val imageUrl = currentAsteroid?.get("nasa_jpl_url") as String
+//                val imageUrl = currentAsteroid?.get("nasa_jpl_url") as String
+                val imageUrl = if (!isPotentiallyHazardous) "https://phantom-marca.unidadeditorial.es/886eaf390397f7aae414d370e57020b8/resize/660/f/webp/assets/multimedia/imagenes/2022/01/12/16420146525312.jpg" else "https://cdn.dnaindia.com/sites/default/files/styles/full/public/2021/12/16/1010226-asteroid-g62225b7ab1280.jpg"
 
                 val asteroidToAdd = Asteroid(
                     id = id,
@@ -64,7 +67,8 @@ fun asteroidRetrieved(resultJson: LinkedTreeMap<String, ArrayList<Any>>?)
                     relativeVelocity = relativeVelocity,
                     distanceFromEarth = distanceFromEarth,
                     isPotentiallyHazardous = isPotentiallyHazardous,
-                    url = "https://cdn.dnaindia.com/sites/default/files/styles/full/public/2021/12/16/1010226-asteroid-g62225b7ab1280.jpg"
+                    url = imageUrl,
+                    createdDate = createdDate
                 )
                 asteroidList.add(asteroidToAdd)
 //                Log.i("Asteroid Asteroid : ",currentAsteroid?.get("name").toString())
