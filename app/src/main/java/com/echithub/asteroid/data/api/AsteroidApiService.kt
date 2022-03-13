@@ -20,11 +20,16 @@ class AsteroidApiService {
         .build()
         .create(AsteroidApi::class.java)
 
-    fun getPictureOfDay(): Single<PictureOfDay>{
+    fun getPictureOfDay(): Single<PictureOfDay> {
         return api.getPictureOfDay()
     }
 
-    fun getAsteroids(): Single<BaseResponse>{
+    fun getAsteroids(): Single<BaseResponse> {
         return api.getAsteroid()
+    }
+
+    fun getAsteroidForDay(startDate: String, endDate: String, apiKey: String)
+            : Single<BaseResponse> {
+        return api.getAsteroidForDay(startDate, endDate, apiKey)
     }
 }

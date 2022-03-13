@@ -7,7 +7,9 @@ import com.echithub.asteroid.data.api.AsteroidApiService
 import com.echithub.asteroid.data.api.Response.BaseResponse
 import com.echithub.asteroid.data.model.Asteroid
 import com.echithub.asteroid.data.model.PictureOfDay
+import com.echithub.asteroid.util.Constants
 import com.echithub.asteroid.util.asteroidRetrieved
+import com.echithub.asteroid.util.getNextSevenDaysFormattedDates
 import com.google.gson.internal.LinkedTreeMap
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -75,6 +77,31 @@ class AsteroidRepo(private val  database: AppDatabase) {
 
     }
 
+    /**
+     * Get Api with Params
+     */
+    private suspend fun getAsteroidFromRemoteApiWithParams(startDate: String, endDate: String, apiKey: String){
+        withContext(Dispatchers.IO){
+            disposable.add(
+                asteroidService.getAsteroidForDay(startDate,endDate,apiKey)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object: DisposableSingleObserver<BaseResponse>(){
+                        override fun onSuccess(t: BaseResponse) {
+                            asteroids = asteroidRetrieved(t.nearEarthObjects as? LinkedTreeMap<String,ArrayList<Any>>)
+                            storeToDb(asteroids as List<Asteroid>)
+                        }
+                        override fun onError(e: Throwable) {
+                            e.printStackTrace()
+                        }
+
+                    })
+            )
+
+        }
+
+    }
+
     fun getPictureOfDayFromApi(){
 
         disposable.add(
@@ -95,7 +122,10 @@ class AsteroidRepo(private val  database: AppDatabase) {
     }
 
     suspend fun refresh(){
-        getAsteroidFromRemoteApi()
+//        getAsteroidFromRemoteApi()
+        val listOfDates = getNextSevenDaysFormattedDates()
+        Log.i(TAG,listOfDates.toString())
+        getAsteroidFromRemoteApiWithParams(listOfDates[0],listOfDates[listOfDates.size-1],Constants.API_KEY)
     }
 
 
