@@ -3,16 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/sirmi/StudioProjects/Asteroid/app/src/main/res/layout/asteroid_row.xml" value="0.5505208333333333" />
-        <entry key="..\:/Users/sirmi/StudioProjects/Asteroid/app/src/main/res/layout/fragment_detail.xml" value="0.1" />
-        <entry key="..\:/Users/sirmi/StudioProjects/Asteroid/app/src/main/res/layout/fragment_main.xml" value="0.26773049645390073" />
         <entry key="app/src/main/res/drawable/ic_help_circle.xml" value="0.165" />
         <entry key="app/src/main/res/drawable/ic_status_normal.xml" value="0.423" />
         <entry key="app/src/main/res/drawable/placeholder_picture_of_day.xml" value="0.423" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/asteroid_row.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_detail.xml" value="0.4244791666666667" />
-        <entry key="app/src/main/res/layout/fragment_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_main.xml" value="0.25" />
       </map>
     </option>
   </component>

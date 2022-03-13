@@ -63,7 +63,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
     fun getPictureOfDayFromApi(){
         isLoading.value = true
-
+        Log.i("Asteroid","Getting Picture")
         disposable.add(
             asteroidService.getPictureOfDay()
                 .subscribeOn(Schedulers.newThread())
@@ -78,6 +78,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
                     override fun onError(e: Throwable) {
                         isLoading.value = false
                         hasError.value = true
+                        Log.i("Asteroid","No Network")
                         e.printStackTrace()
                     }
 
@@ -85,29 +86,13 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         )
     }
 
-    fun getAsteroidsFromApi(){
+    fun refreshData(){
         isLoading.value = true
-        disposable.add(
-            asteroidService.getAsteroids()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object:DisposableSingleObserver<BaseResponse>(){
-                    override fun onSuccess(t: BaseResponse) {
-                        isLoading.value = false
-                        hasError.value = false
-                        val asteroidList = asteroidRetrieved(t.nearEarthObjects as? LinkedTreeMap<String,ArrayList<Any>>)
-                        storeAsteroidLocally(asteroidList)
-                    }
-
-                    override fun onError(e: Throwable) {
-                        isLoading.value = false
-                        hasError.value = true
-                        e.printStackTrace()
-                    }
-
-                })
-        )
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.refresh()
+        }
     }
+
 
 
     override fun onCleared() {

@@ -1,5 +1,6 @@
 package com.echithub.asteroid.data.repo
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.echithub.asteroid.data.AppDatabase
 import com.echithub.asteroid.data.api.AsteroidApiService
@@ -12,7 +13,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -21,6 +24,7 @@ import kotlinx.coroutines.withContext
 //class AsteroidRepo(private val  asteroidDao: AsteroidDao) {
 class AsteroidRepo(private val  database: AppDatabase) {
 
+    private val TAG = "Asteroid Repo"
     private val asteroidDao = database.asteroidDao
     val readAllData: LiveData<List<Asteroid>> = asteroidDao.getAll()
 
@@ -29,6 +33,8 @@ class AsteroidRepo(private val  database: AppDatabase) {
 
     private var asteroids: List<Asteroid>?= null
     private var pictures: PictureOfDay?= null
+
+    private val myCoroutineScope = CoroutineScope(Dispatchers.IO)
 
     suspend fun addAsteroid(vararg asteroids: Asteroid):List<Long>{
         return asteroidDao.insertAsteroid(*asteroids)
@@ -47,7 +53,7 @@ class AsteroidRepo(private val  database: AppDatabase) {
         return asteroidDao.getAsteroidWithId(asteroidId)
     }
 
-    private suspend fun getAsteroidFromRemoteApi() {
+    private suspend fun getAsteroidFromRemoteApi(){
         withContext(Dispatchers.IO){
             disposable.add(
                 asteroidService.getAsteroids()
@@ -56,6 +62,7 @@ class AsteroidRepo(private val  database: AppDatabase) {
                     .subscribeWith(object: DisposableSingleObserver<BaseResponse>(){
                         override fun onSuccess(t: BaseResponse) {
                             asteroids = asteroidRetrieved(t.nearEarthObjects as? LinkedTreeMap<String,ArrayList<Any>>)
+                            storeToDb(asteroids as List<Asteroid>)
                         }
                         override fun onError(e: Throwable) {
                             e.printStackTrace()
@@ -63,7 +70,9 @@ class AsteroidRepo(private val  database: AppDatabase) {
 
                     })
             )
+
         }
+
     }
 
     fun getPictureOfDayFromApi(){
@@ -87,8 +96,8 @@ class AsteroidRepo(private val  database: AppDatabase) {
 
     suspend fun refresh(){
         getAsteroidFromRemoteApi()
-        asteroids?.let { storeAsteroidLocally(it) }
     }
+
 
     suspend fun refreshPictureOfDay(){
         getPictureOfDayFromApi()
@@ -96,8 +105,8 @@ class AsteroidRepo(private val  database: AppDatabase) {
     }
 
 
-    private suspend fun storeAsteroidLocally(list:List<Asteroid>){
-        withContext(Dispatchers.IO){
+    private fun storeToDb(list:List<Asteroid>){
+        myCoroutineScope.launch {
             deleteAllAsteroidFromDatabase()
             addAsteroid(*list.toTypedArray())
         }

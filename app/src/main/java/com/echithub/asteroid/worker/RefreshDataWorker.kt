@@ -15,7 +15,7 @@ class RefreshDataWorker(appContext: Context,params: WorkerParameters)
 
         return try {
             // TO DO - Get sterdoid in the backgroun
-                repo.refresh()
+                 repo.refresh()
             Result.success()
         }catch(exception: HttpException) {
             Result.retry()

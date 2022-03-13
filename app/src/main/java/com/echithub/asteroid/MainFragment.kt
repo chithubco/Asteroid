@@ -14,6 +14,7 @@ import com.echithub.asteroid.ui.adapters.AsteroidListAdapter
 import com.echithub.asteroid.ui.viewmodel.MainViewModel
 import com.echithub.asteroid.util.getProgressSpinner
 import com.echithub.asteroid.util.loadImage
+import com.google.android.material.snackbar.Snackbar
 
 class MainFragment : Fragment() {
 
@@ -37,7 +38,7 @@ class MainFragment : Fragment() {
         mAsteroidVideModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         mAsteroidVideModel.getPictureOfDayFromApi()
-        mAsteroidVideModel.getAsteroidsFromApi()
+        mAsteroidVideModel.refreshData()
 
         val adapter = AsteroidListAdapter(arrayListOf())
         binding.asteroidRecycler.adapter = adapter
@@ -66,6 +67,12 @@ class MainFragment : Fragment() {
                 Log.i("Asteroid : State",loading.toString())
             }
         })
-    }
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.swipeRefreshLayout.isRefreshing = true
+            mAsteroidVideModel.refreshData()
+            binding.swipeRefreshLayout.isRefreshing = false
+            Snackbar.make(binding.swipeRefreshLayout,"Database updated",Snackbar.LENGTH_LONG).show()
+        }
+    }
 }
