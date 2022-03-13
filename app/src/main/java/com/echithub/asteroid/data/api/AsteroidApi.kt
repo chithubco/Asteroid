@@ -9,8 +9,6 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface AsteroidApi {
-    @GET("neo/rest/v1/feed?start_date=2021-09-07&end_date=2021-09-08&api_key=nawqo1ORHNvzDZW4GaUkLjhPNmdzx05UBzBLngVH")
-    fun getAsteroid(): Single<BaseResponse>
 
     @GET("planetary/apod?api_key=nawqo1ORHNvzDZW4GaUkLjhPNmdzx05UBzBLngVH")
     fun getPictureOfDay(): Single<PictureOfDay>

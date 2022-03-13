@@ -24,10 +24,6 @@ class AsteroidApiService {
         return api.getPictureOfDay()
     }
 
-    fun getAsteroids(): Single<BaseResponse> {
-        return api.getAsteroid()
-    }
-
     fun getAsteroidForDay(startDate: String, endDate: String, apiKey: String)
             : Single<BaseResponse> {
         return api.getAsteroidForDay(startDate, endDate, apiKey)

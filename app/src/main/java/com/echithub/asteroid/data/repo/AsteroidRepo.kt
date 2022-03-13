@@ -55,28 +55,6 @@ class AsteroidRepo(private val  database: AppDatabase) {
         return asteroidDao.getAsteroidWithId(asteroidId)
     }
 
-    private suspend fun getAsteroidFromRemoteApi(){
-        withContext(Dispatchers.IO){
-            disposable.add(
-                asteroidService.getAsteroids()
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith(object: DisposableSingleObserver<BaseResponse>(){
-                        override fun onSuccess(t: BaseResponse) {
-                            asteroids = asteroidRetrieved(t.nearEarthObjects as? LinkedTreeMap<String,ArrayList<Any>>)
-                            storeToDb(asteroids as List<Asteroid>)
-                        }
-                        override fun onError(e: Throwable) {
-                            e.printStackTrace()
-                        }
-
-                    })
-            )
-
-        }
-
-    }
-
     /**
      * Get Api with Params
      */

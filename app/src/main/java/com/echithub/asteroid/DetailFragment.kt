@@ -53,13 +53,13 @@ class DetailFragment : Fragment(),AsteroidClickLister{
         val builder: AlertDialog.Builder? = activity?.let {
             AlertDialog.Builder(it)
         }
-        builder?.setMessage(message)?.setTitle(title)
+        builder?.setMessage(message)?.setTitle(title)?.setPositiveButton("ACCEPT",null)
         val dialog: AlertDialog? = builder?.create()
         dialog?.show()
     }
 
     override fun onAsteroidImageClicked(v: View) {
-        openDialog("This is a good thing","Asteroid")
+        openDialog(getString(R.string.astronomica_unit_explanation),"ASTRONOMIC UNITS")
     }
 
 }
