@@ -26,4 +26,10 @@ data class Asteroid(
     @ColumnInfo(name = "distance_from_earth")
     val distanceFromEarth: Double,
     @ColumnInfo(name = "is_potentially_hazardous")
-    val isPotentiallyHazardous: Boolean)
+    val isPotentiallyHazardous: Boolean,
+    @SerializedName("nasa_jpl_url")
+    @ColumnInfo(name = "image_url")
+    val url: String?,
+    @ColumnInfo(name = "created_date")
+    val createdDate: String?
+    )

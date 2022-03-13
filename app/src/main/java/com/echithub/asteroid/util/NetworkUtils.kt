@@ -2,46 +2,82 @@ package com.echithub.asteroid.util
 
 import android.os.Build
 import android.util.Log
+import com.echithub.asteroid.data.api.Response.EstimatedDiameter
 import com.echithub.asteroid.data.model.Asteroid
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import com.echithub.asteroid.util.Constants
+import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
 
-fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
-//    val nearEarthObjectsJson = jsonResult.getJSONObject("near_earth_objects")
+fun asteroidRetrieved(resultJson: LinkedTreeMap<String, ArrayList<Any>>?)
+        :ArrayList<Asteroid>{
+    var asteroidList = ArrayList<Asteroid>()
+    if (resultJson != null) {
+        for ((key,value) in resultJson){
+//            Log.i("Asteroid Key Map : ","$key")
+            val createdDate = key
 
-    val asteroidList = ArrayList<Asteroid>()
+            for (asteroid in value){
 
-    val nextSevenDaysFormattedDates = getNextSevenDaysFormattedDates()
-    for (formattedDate in nextSevenDaysFormattedDates) {
-        val dateAsteroidJsonArray = jsonResult.getJSONArray(formattedDate)
+                val currentAsteroid: LinkedTreeMap<String,Any>? = asteroid as? LinkedTreeMap<String,Any>
+                val codeName = currentAsteroid?.get("name")
+                val id = currentAsteroid?.get("id").toString().toLong()
+                val neoReferenceId = currentAsteroid?.get("neo_reference_id")
+                val nasaJplUrl = currentAsteroid?.get("nasa_jpl_url")
+                val absoluteMagnitude = currentAsteroid?.get("absolute_magnitude_h")
 
-        for (i in 0 until dateAsteroidJsonArray.length()) {
-            val asteroidJson = dateAsteroidJsonArray.getJSONObject(i)
-            val id = asteroidJson.getLong("id")
-            val codename = asteroidJson.getString("name")
-            val absoluteMagnitude = asteroidJson.getDouble("absolute_magnitude_h")
-            val estimatedDiameter = asteroidJson.getJSONObject("estimated_diameter")
-                .getJSONObject("kilometers").getDouble("estimated_diameter_max")
+                val estimatedDiameter: EstimatedDiameter = Gson()
+                    .fromJson(currentAsteroid?.get("estimated_diameter").toString(),
+                        EstimatedDiameter::class.java)
 
-            val closeApproachData = asteroidJson
-                .getJSONArray("close_approach_data").getJSONObject(0)
-            val relativeVelocity = closeApproachData.getJSONObject("relative_velocity")
-                .getDouble("kilometers_per_second")
-            val distanceFromEarth = closeApproachData.getJSONObject("miss_distance")
-                .getDouble("astronomical")
-            val isPotentiallyHazardous = asteroidJson
-                .getBoolean("is_potentially_hazardous_asteroid")
+                val diameter = estimatedDiameter.kilometers?.estimatedDiameterMax
+                val isPotentiallyHazardous = currentAsteroid?.get("is_potentially_hazardous_asteroid") as Boolean
 
-            val asteroid = Asteroid(id, codename, formattedDate, absoluteMagnitude,
-                estimatedDiameter, relativeVelocity, distanceFromEarth, isPotentiallyHazardous)
-            asteroidList.add(asteroid)
+                // Closing Approach Date
+                val dateData = currentAsteroid?.get("close_approach_data") as List<*>
+                val actualData = dateData[0] as LinkedTreeMap<String,Any>
+                val closeApproachDate = actualData?.get("close_approach_date").toString()
+
+                // Relative Velocity
+                val velocityData = actualData?.get("relative_velocity") as LinkedTreeMap<String,Any>
+                val relativeVelocity = velocityData["miles_per_hour"].toString().toDouble()
+//                Log.i("Asteroid Velocity",relativeVelocity.toString())
+
+                //Distance From Earth
+                val distance = actualData?.get("miss_distance") as LinkedTreeMap<String,Any>
+                val distanceFromEarth = distance["miles"].toString().toDouble()
+//                Log.i("Asteroid Distance",distanceFromEarth.toString())
+//
+
+
+                val isSentryObject = currentAsteroid?.get("is_sentry_object")
+
+//                val imageUrl = currentAsteroid?.get("nasa_jpl_url") as String
+                val imageUrl = if (!isPotentiallyHazardous) "https://phantom-marca.unidadeditorial.es/886eaf390397f7aae414d370e57020b8/resize/660/f/webp/assets/multimedia/imagenes/2022/01/12/16420146525312.jpg" else "https://cdn.dnaindia.com/sites/default/files/styles/full/public/2021/12/16/1010226-asteroid-g62225b7ab1280.jpg"
+
+                val asteroidToAdd = Asteroid(
+                    id = id,
+                    codename = codeName as String,
+                    closeApproachDate = closeApproachDate,
+                    estimatedDiameter = diameter.toString().toDouble(),
+                    absoluteMagnitude = absoluteMagnitude.toString().toDouble(),
+                    relativeVelocity = relativeVelocity,
+                    distanceFromEarth = distanceFromEarth,
+                    isPotentiallyHazardous = isPotentiallyHazardous,
+                    url = imageUrl,
+                    createdDate = createdDate
+                )
+                asteroidList.add(asteroidToAdd)
+//                Log.i("Asteroid Asteroid : ",currentAsteroid?.get("name").toString())
+            }
+
         }
     }
-
     return asteroidList
+//
 }
 
 private fun getNextSevenDaysFormattedDates(): ArrayList<String> {

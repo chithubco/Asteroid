@@ -14,7 +14,6 @@ import com.echithub.asteroid.data.model.Asteroid
 
 class AsteroidListAdapter(val asteroidList: ArrayList<Asteroid>): RecyclerView.Adapter<AsteroidListAdapter.MyViewHolder>() {
 
-//    private var asteroidList = emptyList<Asteroid>()
 
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
@@ -29,18 +28,16 @@ class AsteroidListAdapter(val asteroidList: ArrayList<Asteroid>): RecyclerView.A
         var currentItem = asteroidList[position]
         holder.itemView.findViewById<TextView>(R.id.tv_asteroid_id).text = currentItem.id.toString()
         holder.itemView.findViewById<TextView>(R.id.tv_asteroid_date).text = currentItem.codename
+        holder.itemView.findViewById<TextView>(R.id.tv_created_date).text = currentItem.createdDate
+        holder.itemView.findViewById<TextView>(R.id.tv_is_hazardous).text = currentItem.isPotentiallyHazardous.toString()
 
-        // Set on click listener
-//        holder.itemView.findViewById<ConstraintLayout>(R.id.asteroidRowLayout).setOnClickListener{
-//
-//        }
+
         holder.itemView.setOnClickListener {
-            Navigation.findNavController(it).navigate(MainFragmentDirections.actionMainFragmentToDetailFragment())
+            Navigation.findNavController(it).navigate(MainFragmentDirections.actionMainFragmentToDetailFragment(currentItem.id))
         }
     }
 
     override fun getItemCount(): Int {
-        Log.i("Asteroid Item Count : ", asteroidList.size.toString())
         return asteroidList.size
     }
 

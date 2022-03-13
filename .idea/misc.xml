@@ -9,7 +9,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/asteroid_row.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_detail.xml" value="0.4244791666666667" />
-        <entry key="app/src/main/res/layout/fragment_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_main.xml" value="0.25" />
       </map>
     </option>
   </component>
