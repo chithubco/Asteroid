@@ -38,6 +38,10 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     val pictureOfDay = MutableLiveData<PictureOfDay>()
     val hasError = MutableLiveData<Boolean>()
     val isLoading = MutableLiveData<Boolean>()
+    val searchDate = MutableLiveData<String>()
+    val asteroidList = MutableLiveData<List<Asteroid>>()
+
+    private val TAG = "Asteroid ViewModel"
 
     init {
         readAllData = repo.readAllData
@@ -63,7 +67,6 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
     fun getPictureOfDayFromApi(){
         isLoading.value = true
-        Log.i("Asteroid","Getting Picture")
         disposable.add(
             asteroidService.getPictureOfDay()
                 .subscribeOn(Schedulers.newThread())
@@ -78,7 +81,6 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
                     override fun onError(e: Throwable) {
                         isLoading.value = false
                         hasError.value = true
-                        Log.i("Asteroid","No Network")
                         e.printStackTrace()
                     }
 
@@ -90,6 +92,15 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             repo.refresh()
+        }
+    }
+
+    fun filterDateByDate(){
+        viewModelScope.launch(Dispatchers.IO) {
+            searchDate.value?.let {
+                asteroidList.postValue(repo.getAsteroidWithCreatedDate(it))
+                Log.i(TAG,"Got Here")
+            }
         }
     }
 

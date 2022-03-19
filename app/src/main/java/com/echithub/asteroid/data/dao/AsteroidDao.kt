@@ -17,14 +17,14 @@ interface AsteroidDao {
     @Delete
     fun delete(asteroid: Asteroid)
 
-//    @Update
-//    suspend fun update(asteroid: Asteroid)
-//
     @Query("SELECT * FROM asteroid_table WHERE id=:key")
     fun getAsteroidWithId(key:Long): Asteroid
 
     @Query("DELETE FROM asteroid_table")
     fun deleteAll()
+
+    @Query("SELECT * FROM asteroid_table WHERE created_date LIKE:key")
+    fun getAsteroidWithCreatedDate(key:String):List<Asteroid>
 
     /**
      * Picture of Day Methods

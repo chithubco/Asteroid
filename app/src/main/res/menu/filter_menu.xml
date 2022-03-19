@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/filter_1"
+        android:id="@+id/mn_filter_date_1"
+        android:icon="@drawable/ic_calendar"/>
+    <item android:title="@string/filter_text"
+        android:id="@+id/mn_filter_date_2"
+        android:icon="@drawable/ic_calendar"/>
+    <item android:title="@string/filter_text"
+        android:id="@+id/mn_filter_date_3"
+        android:icon="@drawable/ic_calendar"/>
+    <item android:title="@string/filter_text"
+        android:id="@+id/mn_filter_date_4"
+        android:icon="@drawable/ic_calendar"/>
+    <item android:title="@string/filter_text"
+        android:id="@+id/mn_filter_date_5"
+        android:icon="@drawable/ic_calendar"/>
+    <item android:title="@string/filter_text"
+        android:id="@+id/mn_filter_date_6"
+        android:icon="@drawable/ic_calendar"/>
+    <item android:title="@string/filter_text"
+        android:id="@+id/mn_filter_date_7"
+        android:icon="@drawable/ic_calendar"/>
+</menu>

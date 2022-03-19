@@ -21,4 +21,14 @@
     <string name="not_hazardous_asteroid_image">Not hazardous asteroid image</string>
     <string name="this_is_nasa_s_picture_of_day_showing_nothing_yet">This is NASA\'s picture of day, showing nothing yet</string>
     <string name="nasa_picture_of_day_content_description_format">NASA\'s picture of day: %s</string>
+    <string name="filter_1">01-01-2022</string>
+    <string name="filter_text">Item</string>
+    <string name="talk_back_image">Image of the Asteroid For Today</string>
+    <string name="content_desc_swipe">List of Asteroids swipe to refresh with latest data</string>
+    <string name="asteroid_image">Asteroid Image from NASA API</string>
+    <string name="cd_approach_date">Asteroid Close Approach Date</string>
+    <string name="cd_absolute_magnitude">Asteroid Absolute Magnitude</string>
+    <string name="cd_estimated_dimater">Asteroid Estimated Diameter</string>
+    <string name="cd_relative_valocity">Asteroid Absolute Velocity</string>
+    <string name="cd_distance_from_earth">Asteroid Distance From Earth</string>
 </resources>
