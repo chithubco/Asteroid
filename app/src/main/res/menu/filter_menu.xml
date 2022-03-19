@@ -22,4 +22,8 @@
     <item android:title="@string/filter_text"
         android:id="@+id/mn_filter_date_7"
         android:icon="@drawable/ic_calendar"/>
+    <item
+        android:title="Clear Filters"
+        android:id="@+id/mn_clear_all"
+        android:icon="@drawable/ic_calendar"/>
 </menu>

@@ -38,6 +38,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     val pictureOfDay = MutableLiveData<PictureOfDay>()
     val hasError = MutableLiveData<Boolean>()
     val isLoading = MutableLiveData<Boolean>()
+    val clearAll = MutableLiveData<Boolean>()
     val searchDate = MutableLiveData<String>()
     val asteroidList = MutableLiveData<List<Asteroid>>()
 
@@ -45,14 +46,9 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
     init {
         readAllData = repo.readAllData
+        clearAll.value = false
     }
 
-    fun storeAsteroidLocally(list: List<Asteroid>){
-        viewModelScope.launch (Dispatchers.IO){
-            repo.deleteAllAsteroidFromDatabase()
-            val result = repo.addAsteroid(*list.toTypedArray())
-        }
-    }
 
     fun refresh(){
         hasError.value = false
@@ -63,6 +59,11 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
            readAllData = repo.readAllData
        }
 
+    }
+
+    fun clearData(){
+        readAllData = repo.readAllData
+        clearAll.value = false
     }
 
     fun getPictureOfDayFromApi(){
@@ -103,8 +104,6 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
             }
         }
     }
-
-
 
     override fun onCleared() {
         super.onCleared()

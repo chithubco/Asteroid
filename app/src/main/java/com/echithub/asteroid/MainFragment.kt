@@ -62,19 +62,32 @@ class MainFragment : Fragment() {
 
         mAsteroidVideModel.hasError.observe(viewLifecycleOwner, Observer { error ->
             error?.let {
-                Log.i("Asteroid : State",error.toString())
             }
         })
 
         mAsteroidVideModel.isLoading.observe(viewLifecycleOwner, Observer { loading ->
             loading?.let {
-                Log.i("Asteroid : State",loading.toString())
+            }
+        })
+
+        mAsteroidVideModel.clearAll.observe(viewLifecycleOwner, Observer { clearFilter ->
+            clearFilter?.let {
+                if (it){
+                    mAsteroidVideModel.clearData()
+                    Log.i(TAG,mAsteroidVideModel.readAllData.value.toString())
+                    mAsteroidVideModel.readAllData.value?.let { it1 -> adapter.setData(it1) }
+                    Snackbar.make(binding.swipeRefreshLayout,"Clearing Filters",Snackbar.LENGTH_LONG).show()
+                }
+
             }
         })
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             binding.swipeRefreshLayout.isRefreshing = true
             mAsteroidVideModel.refreshData()
+            mAsteroidVideModel.refresh()
+            mAsteroidVideModel.clearData()
+            mAsteroidVideModel.readAllData.value?.let { it1 -> adapter.setData(it1) }
             binding.swipeRefreshLayout.isRefreshing = false
             Snackbar.make(binding.swipeRefreshLayout,"Database updated",Snackbar.LENGTH_LONG).show()
         }
@@ -130,6 +143,10 @@ class MainFragment : Fragment() {
             R.id.mn_filter_date_7 -> {
                 mAsteroidVideModel.searchDate.value = listOfDates[6]
                 mAsteroidVideModel.filterDateByDate()
+                true
+            }
+            R.id.mn_clear_all -> {
+                mAsteroidVideModel.clearAll.postValue(true)
                 true
             }
             else -> super.onOptionsItemSelected(item)
