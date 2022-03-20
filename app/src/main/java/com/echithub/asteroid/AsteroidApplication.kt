@@ -15,7 +15,6 @@ class AsteroidApplication: Application() {
     private val applicationScope = CoroutineScope(Dispatchers.IO)
     override fun onCreate() {
         super.onCreate()
-        Log.i("Asteroid Application","Application Started")
         delayedInit()
     }
 

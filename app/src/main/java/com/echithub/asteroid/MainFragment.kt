@@ -76,7 +76,7 @@ class MainFragment : Fragment() {
                     mAsteroidVideModel.clearData()
                     Log.i(TAG,mAsteroidVideModel.readAllData.value.toString())
                     mAsteroidVideModel.readAllData.value?.let { it1 -> adapter.setData(it1) }
-                    Snackbar.make(binding.swipeRefreshLayout,"Clearing Filters",Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(binding.swipeRefreshLayout,"Stored Data Loaded",Snackbar.LENGTH_LONG).show()
                 }
 
             }
@@ -88,6 +88,7 @@ class MainFragment : Fragment() {
             mAsteroidVideModel.refresh()
             mAsteroidVideModel.clearData()
             mAsteroidVideModel.readAllData.value?.let { it1 -> adapter.setData(it1) }
+            mAsteroidVideModel.getPictureOfDayFromApi()
             binding.swipeRefreshLayout.isRefreshing = false
             Snackbar.make(binding.swipeRefreshLayout,"Database updated",Snackbar.LENGTH_LONG).show()
         }
@@ -98,54 +99,25 @@ class MainFragment : Fragment() {
 
         inflater?.inflate(R.menu.filter_menu,menu)
         val listOfDates = getNextSevenDaysFormattedDates()
-        menu.findItem(R.id.mn_filter_date_1).title = listOfDates[0]
-        menu.findItem(R.id.mn_filter_date_2).title = listOfDates[1]
-        menu.findItem(R.id.mn_filter_date_3).title = listOfDates[2]
-        menu.findItem(R.id.mn_filter_date_4).title = listOfDates[3]
-        menu.findItem(R.id.mn_filter_date_5).title = listOfDates[4]
-        menu.findItem(R.id.mn_filter_date_6).title = listOfDates[5]
-        menu.findItem(R.id.mn_filter_date_7).title = listOfDates[6]
+//        menu.findItem(R.id.mn_filter_date_1).title = listOfDates[0]
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val listOfDates = getNextSevenDaysFormattedDates()
         return when(item.itemId){
-            R.id.mn_filter_date_1 -> {
+            R.id.show_all_menu -> {
+                mAsteroidVideModel.clearAll.postValue(true)
+                true
+            }
+            R.id.show_rent_menu -> {
+//                mAsteroidVideModel.clearAll.postValue(true)
                 mAsteroidVideModel.searchDate.value = listOfDates[0]
                 mAsteroidVideModel.filterDateByDate()
+                Snackbar.make(binding.swipeRefreshLayout,"Today List Loaded",Snackbar.LENGTH_LONG).show()
                 true
             }
-            R.id.mn_filter_date_2 -> {
-                mAsteroidVideModel.searchDate.value = listOfDates[1]
-                mAsteroidVideModel.filterDateByDate()
-                true
-            }
-            R.id.mn_filter_date_3 -> {
-                mAsteroidVideModel.searchDate.value = listOfDates[2]
-                mAsteroidVideModel.filterDateByDate()
-                true
-            }
-            R.id.mn_filter_date_4 -> {
-                mAsteroidVideModel.searchDate.value = listOfDates[3]
-                mAsteroidVideModel.filterDateByDate()
-                true
-            }
-            R.id.mn_filter_date_5 -> {
-                mAsteroidVideModel.searchDate.value = listOfDates[4]
-                mAsteroidVideModel.filterDateByDate()
-                true
-            }
-            R.id.mn_filter_date_6 -> {
-                mAsteroidVideModel.searchDate.value = listOfDates[5]
-                mAsteroidVideModel.filterDateByDate()
-                true
-            }
-            R.id.mn_filter_date_7 -> {
-                mAsteroidVideModel.searchDate.value = listOfDates[6]
-                mAsteroidVideModel.filterDateByDate()
-                true
-            }
-            R.id.mn_clear_all -> {
+            R.id.show_buy_menu -> {
                 mAsteroidVideModel.clearAll.postValue(true)
                 true
             }

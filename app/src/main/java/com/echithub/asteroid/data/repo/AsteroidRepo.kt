@@ -74,8 +74,7 @@ class AsteroidRepo(private val database: AppDatabase) {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableSingleObserver<BaseResponse>() {
                         override fun onSuccess(t: BaseResponse) {
-                            asteroids =
-                                asteroidRetrieved(t.nearEarthObjects as? LinkedTreeMap<String, ArrayList<Any>>)
+                            asteroids = asteroidRetrieved(t.nearEarthObjects as? LinkedTreeMap<String, ArrayList<Any>>)
                             storeToDb(asteroids as List<Asteroid>)
                         }
 
@@ -110,9 +109,7 @@ class AsteroidRepo(private val database: AppDatabase) {
     }
 
     suspend fun refresh() {
-//        getAsteroidFromRemoteApi()
         val listOfDates = getNextSevenDaysFormattedDates()
-        Log.i(TAG, listOfDates.toString())
         getAsteroidFromRemoteApiWithParams(
             listOfDates[0],
             listOfDates[listOfDates.size - 1],

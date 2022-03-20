@@ -100,7 +100,6 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             searchDate.value?.let {
                 asteroidList.postValue(repo.getAsteroidWithCreatedDate(it))
-                Log.i(TAG,"Got Here")
             }
         }
     }
